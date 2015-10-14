@@ -1,0 +1,1 @@
+c:\users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\bin\Debug\ConnectFour.exe.config
