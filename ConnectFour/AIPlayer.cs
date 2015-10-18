@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConnectFour
 {
-    class Program
+    class AIPlayer
     {
-        static void Main(string[] args)
-        {
-        }
     }
 }

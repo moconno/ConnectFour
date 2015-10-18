@@ -1,1 +1,6 @@
 c:\users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\bin\Debug\ConnectFour.exe.config
+C:\Users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\obj\Debug\ConnectFour.csprojResolveAssemblyReference.cache
+C:\Users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\bin\Debug\ConnectFour.exe
+C:\Users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\bin\Debug\ConnectFour.pdb
+C:\Users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\obj\Debug\ConnectFour.exe
+C:\Users\mycom\documents\visual studio 2013\Projects\ConnectFour\ConnectFour\obj\Debug\ConnectFour.pdb
