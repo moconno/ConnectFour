@@ -8,5 +8,15 @@ namespace ConnectFour
 {
     class AIPlayer
     {
+
+        public AIPlayer()
+        {
+
+        }
+
+        //public override void Move()
+        //{
+
+        //}
     }
 }

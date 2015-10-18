@@ -46,7 +46,7 @@ namespace ConnectFour
             {
                 for (int j = 0; j < width; j++)
                 {
-                    Cell cell = new Cell();
+                    Cell cell = new Cell(i, j);
 
                     if (i == length - 1)
                     {

@@ -8,6 +8,9 @@ namespace ConnectFour
 {
     abstract class Region : Board
     {
+
+        static Region region;
+
         public enum connectedCells
         {
             north,
@@ -25,93 +28,76 @@ namespace ConnectFour
             
         }
 
-        public SortedDictionary<int, Region> findConnectedCells()
+        public static void findConnectedCells()
         {
-            List<connectedCells> directions;
+            
 
             for(int i = length - 1; i >= 0; i--)
             {
                 for(int j = 0; j < width; j++)
                 {
                     Cell cell = board[i, j];
-
-                    directions = new List<connectedCells>();
-                    
+                
                     //has r north cells
                     if(i >= connectR - 1)
                     {
-                        directions.Add(connectedCells.north);
+                        region = new Vertical();
+                        region.AddCells(cell, connectedCells.north);
 
                         //has r northeast cells
                         if(j + connectR - 1 < width)
                         {
-                            directions.Add(connectedCells.northEast);
+                            region = new Diagonal();
+                            region.AddCells(cell, connectedCells.northEast);
                         }
 
                         //has r northwest cells
                         if(j >= connectR - 1)
                         {
-                            directions.Add(connectedCells.northWest);
+                            region = new Diagonal();
+                            region.AddCells(cell, connectedCells.northWest);
                         }
                     }
 
                     //has r south cells
                     if(i + connectR - 1 < length)
                     {
-                        directions.Add(connectedCells.south);
+                        region = new Vertical();
+                        region.AddCells(cell, connectedCells.south);
 
                         //has r southwest cells
-                        if(j - connectR - 1 >= 0)
+                        if(j - connectR + 1 >= 0)
                         {
-                            directions.Add(connectedCells.southWest);
+                            region = new Diagonal();
+                            region.AddCells(cell, connectedCells.southWest);
                         }
 
                         //has r southeast cells
-                        if(j >= connectR - 1)
+                        if(j <= connectR - 1)
                         {
-                            directions.Add(connectedCells.southEast);
+                            region = new Diagonal();
+                            region.AddCells(cell, connectedCells.southEast);
                         }
                     }
 
                     //has r east cells
-                    if(j >= connectR - 1)
+                    if(j <= connectR - 1)
                     {
-                        directions.Add(connectedCells.east);
+                        region = new Horizontal();
+                        region.AddCells(cell, connectedCells.east);
                     }
 
                     //has r west cells
-                    if(j - connectR - 1 >= 0)
+                    if(j - connectR + 1 >= 0)
                     {
-                        directions.Add(connectedCells.west);
+                        region = new Horizontal();
+                        region.AddCells(cell, connectedCells.west);
                     }
-
-                    ConnectCells(i, j, cell, directions);
                 }
             }
         }
 
-        private SortedDictionary<int, Region> ConnectCells(int row, int column, Cell cell, List<connectedCells> c)
-        {
-            SortedDictionary<int, Region> cells = new SortedDictionary<int,Region>();
-
-            Region region;
-
-            for(int i = 0; i < c.Count; i++)
-            {
-                connectedCells direction = c[i];
-
-                switch(direction)
-                {
-                    case connectedCells.north:
-                        region = new Vertical();
-                        region.AddCells(row, column, cell, c);
-                        break;
-                }
-            }
-        }
-
-
-        public abstract void AddCells(int row, int column, Cell cell, connectedCells c);
+        public abstract void AddCells(Cell cell, connectedCells c);
 
     }
 }
