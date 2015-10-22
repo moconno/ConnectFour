@@ -16,7 +16,7 @@ namespace ConnectFour
             cells = new List<Cell>();
         }
 
-        public override void AddCells(Cell cell, connectedCells c)
+        public override void AddCells(Board board, Cell cell, connectedCells c)
         {
            
             switch(c)
@@ -24,7 +24,7 @@ namespace ConnectFour
                 case connectedCells.northEast:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() - i, cell.getColumn() + i]);
+                        cells.Add(board.getCell(cell.getRow() - i, cell.getColumn() + i));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.northEast, cells);
@@ -34,7 +34,7 @@ namespace ConnectFour
                 case connectedCells.southEast:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() + i, cell.getColumn() + i]);
+                        cells.Add(board.getCell(cell.getRow() + i, cell.getColumn() + i));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.southEast, cells);
@@ -44,7 +44,7 @@ namespace ConnectFour
                 case connectedCells.southWest:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() + i, cell.getColumn() - i]);
+                        cells.Add(board.getCell(cell.getRow() + i, cell.getColumn() - i));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.southWest, cells);
@@ -54,7 +54,7 @@ namespace ConnectFour
                 case connectedCells.northWest:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() - i, cell.getColumn() - i]);
+                        cells.Add(board.getCell(cell.getRow() - i, cell.getColumn() - i));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.northWest, cells);

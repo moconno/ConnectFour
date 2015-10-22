@@ -14,11 +14,14 @@ namespace ConnectFour
 
         Boolean playable;  
 
-        //Map key = direction and value = Region - call made by a cell to its observers so that observers can check if the cell's state affects its heuristic function
+        //Map key = direction and value = Region - call made by cell to its observers so that observers can check if the cell's state affects its heuristic function
         SortedDictionary<int, HashSet<Cell>> observers;
 
-        //map key = direction and value = List<Cell> -  for observer cells so that an observer cell can t
+        //map key = direction and value = List<Cell> -  Used to tell if connect R has been made 
         SortedDictionary<int, List<Cell>> connectCells;
+
+        //The state of the cell - empty, black, red
+        private CellState state;
 
         public enum CellState
         {
@@ -27,11 +30,16 @@ namespace ConnectFour
             black = 2,
         }
 
-        //The state of the cell - empty, black, red
-        private CellState state;
-
-        //The temporary state used in the minimax tree to determine moves
-        private CellState tempState;
+        //Copy Constructor
+        public Cell(Cell cell)
+        {
+            rowPos = cell.rowPos;
+            colPos = cell.colPos;
+            playable = cell.isPlayable();
+            state = cell.state;
+            observers = cell.observers;
+            connectCells = cell.connectCells; 
+        }
 
         public Cell(int r, int c)
         {
@@ -44,7 +52,8 @@ namespace ConnectFour
 
         public void AddConnectedCells(int direction, List<Cell> region)
         {
-            connectCells.Add(direction, region);
+            if(!connectCells.ContainsKey(direction))
+                connectCells.Add(direction, region);
         }
 
         //The cell adds itself to its connected cells observer list and the connected cells add the cell to their observer lists
@@ -79,7 +88,6 @@ namespace ConnectFour
                 observers.Add(index, c);
             }
 
-
         }
 
         public int getRow()
@@ -95,7 +103,11 @@ namespace ConnectFour
         public void setState(int s)
         {
             if(state == CellState.empty)
+            {
                 state = (CellState)s;
+            }
+            playable = false;
+                
         }
 
         public CellState getState()

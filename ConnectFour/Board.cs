@@ -9,7 +9,7 @@ namespace ConnectFour
     class Board
     {
 
-        protected static Cell[,] board;
+        protected Cell[,] board;
 
         protected static int width;
 
@@ -17,7 +17,7 @@ namespace ConnectFour
 
         protected static int connectR;
 
-        protected Player player;
+        Player player;
 
         protected Boolean gameOver = false;
 
@@ -26,11 +26,11 @@ namespace ConnectFour
 
         }
 
-        public Board(Cell[,] b)
-        {
-            board = new Cell[b.GetLength(0), b.GetLength(1)];
-            board = b;
-        }
+        //public Board(Cell[,] b)
+        //{
+            //board = new Cell[b.GetLength(0), b.GetLength(1)];
+            //board = b;
+        //}
 
         public Board(int x, int y, int r)
         {
@@ -59,6 +59,30 @@ namespace ConnectFour
           
         }
 
+        //Copy constructor
+        public Board(Board b)
+        {
+            length = b.GetLength();
+
+            width = b.GetWidth();
+
+            connectR = b.GetConnectR();
+
+            board = new Cell[length, width];
+
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    Cell cell = new Cell(b.getCell(i, j));
+
+                    board[i, j] = cell;
+                }
+            }
+     
+
+        }
+
         public Boolean isGameOver()
         {
             return gameOver;
@@ -69,6 +93,11 @@ namespace ConnectFour
             gameOver = g;
         }
 
+        public Cell[,] GetBoard()
+        {
+            return board;
+        }
+
         public int GetWidth()
         {
             return width;
@@ -77,6 +106,11 @@ namespace ConnectFour
         public int GetLength()
         {
             return length;
+        }
+
+        public int GetConnectR()
+        {
+            return connectR;
         }
 
         public void setPlayer(Player p)

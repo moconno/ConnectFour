@@ -26,7 +26,6 @@ namespace ConnectFour
 
         static void Main(string[] args)
         {
-            //Board board = new Board();
 
             Console.Write("Board Width? ");
             colNum = Convert.ToInt32(Console.ReadLine());
@@ -48,17 +47,14 @@ namespace ConnectFour
             Console.WriteLine();
 
             Board board = new Board(rowNum, colNum, r);
-            Region.findConnectedCells();
             for(int i = 0; i < board.GetLength(); i++)
             {
                 for(int j = 0; j < board.GetWidth(); j++)
                 {
+                    Region.findConnectedCells(board);
                     board.getCell(i, j).UpdateObservers();
                 }
-            }
-
-            Cell cell = board.getCell(5, 0);
-            Cell c = board.getCell(5, 1);
+            } 
 
             Player p1 = null;
             Player p2 = null;
@@ -80,16 +76,18 @@ namespace ConnectFour
                     {
                         p1 = new HumanPlayer();
                         p1.setAsRed();
-                        //p2 ;
-                        //p2.setAsBlack();
+                        p2 = new AIPlayer();
+                        p2.setAsBlack();
                     }
                     else
                     {
-                        p1 = new HumanPlayer();
-                        p1.setAsBlack();
-                        //p2.setAsAI();
-                        //p2.setAsRed();
+                        p1 = new AIPlayer();
+                        p1.setAsRed();
+                        p2 = new HumanPlayer();
+                        p2.setAsBlack();
                     }
+                    p1.setOpponent(p2);
+                    p2.setOpponent(p1);
                     break;
 
                 case 3:
@@ -98,20 +96,18 @@ namespace ConnectFour
             }
 
             int turn = RED;
-
+ 
             while(!board.isGameOver())
             {
-                board.printBoard();
-
+                //board.printBoard();
+                
                 switch (turn)
                 {
                     case RED:
-                        Console.WriteLine(p1.getColor() + " player's turn");
                         p1.Move(board);
                         turn = BLACK;
                         break;
                     case BLACK:
-                        Console.WriteLine(p2.getColor() + " player's turn");
                         p2.Move(board);
                         turn = RED;
                         break;

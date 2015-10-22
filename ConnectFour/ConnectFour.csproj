@@ -46,6 +46,7 @@
     <Compile Include="Cell.cs" />
     <Compile Include="Connect4.cs" />
     <Compile Include="Diagonal.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Horizontal.cs" />
     <Compile Include="HumanPlayer.cs" />
     <Compile Include="MiniMaxTree.cs" />

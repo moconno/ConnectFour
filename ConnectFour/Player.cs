@@ -11,6 +11,9 @@ namespace ConnectFour
 
         protected Color color;
 
+        Player opponent;
+        
+
         protected enum Color
         {
             black = 2,
@@ -22,7 +25,27 @@ namespace ConnectFour
 
         }
 
-        public String getColor()
+        public Player(Player player)
+        {
+            opponent = player;
+        }
+
+        public void setOpponent(Player player)
+        {
+            opponent = player;
+        }
+
+        public Player getOpponent()
+        {
+            return opponent;
+        }
+
+        public int getColor()
+        {
+            return (int)color;
+        }
+
+        public String getColorToString()
         {
             return color.ToString();
         }
@@ -30,7 +53,7 @@ namespace ConnectFour
         public void setAsRed()
         {
             color = Color.red;
-        }
+        }   
 
         public void setAsBlack()
         {

@@ -19,6 +19,15 @@ namespace ConnectFour
 
             Boolean moveMade = false;
 
+            b.printBoard();
+
+            if(this.getOpponent() != null)
+            {
+                Console.WriteLine("Derp");
+            }
+
+            Console.WriteLine(this.getColorToString() + " player's turn");
+
             while(!moveMade)
             {
                 Console.Write("Select a Move: " + "0 - " + (b.GetWidth() - 1) + ": ");

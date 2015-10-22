@@ -28,7 +28,7 @@ namespace ConnectFour
             
         }
 
-        public static void findConnectedCells()
+        public static void findConnectedCells(Board board)
         {
             
 
@@ -36,26 +36,26 @@ namespace ConnectFour
             {
                 for(int j = 0; j < width; j++)
                 {
-                    Cell cell = board[i, j];
+                    Cell cell = board.getCell(i, j);
                 
                     //has r north cells
                     if(i >= connectR - 1)
                     {
                         region = new Vertical();
-                        region.AddCells(cell, connectedCells.north);
+                        region.AddCells(board, cell, connectedCells.north);
 
                         //has r northeast cells
                         if(j + connectR - 1 < width)
                         {
                             region = new Diagonal();
-                            region.AddCells(cell, connectedCells.northEast);
+                            region.AddCells(board, cell, connectedCells.northEast);
                         }
 
                         //has r northwest cells
                         if(j >= connectR - 1)
                         {
                             region = new Diagonal();
-                            region.AddCells(cell, connectedCells.northWest);
+                            region.AddCells(board, cell, connectedCells.northWest);
                         }
                     }
 
@@ -63,20 +63,20 @@ namespace ConnectFour
                     if(i + connectR - 1 < length)
                     {
                         region = new Vertical();
-                        region.AddCells(cell, connectedCells.south);
+                        region.AddCells(board, cell, connectedCells.south);
 
                         //has r southwest cells
                         if(j - connectR + 1 >= 0)
                         {
                             region = new Diagonal();
-                            region.AddCells(cell, connectedCells.southWest);
+                            region.AddCells(board, cell, connectedCells.southWest);
                         }
 
                         //has r southeast cells
                         if(j <= connectR - 1)
                         {
                             region = new Diagonal();
-                            region.AddCells(cell, connectedCells.southEast);
+                            region.AddCells(board, cell, connectedCells.southEast);
                         }
                     }
 
@@ -84,20 +84,20 @@ namespace ConnectFour
                     if(j <= connectR - 1)
                     {
                         region = new Horizontal();
-                        region.AddCells(cell, connectedCells.east);
+                        region.AddCells(board, cell, connectedCells.east);
                     }
 
                     //has r west cells
                     if(j - connectR + 1 >= 0)
                     {
                         region = new Horizontal();
-                        region.AddCells(cell, connectedCells.west);
+                        region.AddCells(board, cell, connectedCells.west);
                     }
                 }
             }
         }
 
-        public abstract void AddCells(Cell cell, connectedCells c);
+        public abstract void AddCells(Board board, Cell cell, connectedCells c);
 
     }
 }

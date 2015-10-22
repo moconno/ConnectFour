@@ -16,7 +16,7 @@ namespace ConnectFour
             cells = new List<Cell>();
         }
 
-        public override void AddCells(Cell cell, connectedCells c)
+        public override void AddCells(Board board, Cell cell, connectedCells c)
         {
            
             switch(c)
@@ -24,7 +24,7 @@ namespace ConnectFour
                 case connectedCells.north:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() - i, cell.getColumn()]);
+                        cells.Add(board.getCell(cell.getRow() - i, cell.getColumn()));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.north, cells);
@@ -34,7 +34,7 @@ namespace ConnectFour
                 case connectedCells.south:
                     for (int i = 1; i < connectR; i++)
                     {
-                        cells.Add(board[cell.getRow() + i, cell.getColumn()]);
+                        cells.Add(board.getCell(cell.getRow() + i, cell.getColumn()));
                     }
 
                     cell.AddConnectedCells((int)connectedCells.south, cells);
