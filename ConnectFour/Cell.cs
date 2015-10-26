@@ -37,8 +37,8 @@ namespace ConnectFour
             colPos = cell.colPos;
             playable = cell.isPlayable();
             state = cell.state;
-            observers = cell.observers;
-            connectCells = cell.connectCells; 
+            connectCells = new SortedDictionary<int, List<Cell>>();
+            observers = new SortedDictionary<int, HashSet<Cell>>();
         }
 
         public Cell(int r, int c)
@@ -52,8 +52,55 @@ namespace ConnectFour
 
         public void AddConnectedCells(int direction, List<Cell> region)
         {
+            //Cells that are not the same state(red or black) should not be added to connectCells
+            Boolean addCells = true;
+
+            Boolean hasRedState = false;
+            
+            Boolean hasBlackState = false;
+
+            //Shouldn't add a region twice
             if(!connectCells.ContainsKey(direction))
-                connectCells.Add(direction, region);
+            {
+                foreach (Cell cell in region)
+                {
+
+                    //Don't add cells from a region if they contain two different colors
+                    if(cell.state.Equals(CellState.red))
+                    {
+                        hasRedState = true;
+                    }
+                    else if(cell.state.Equals(CellState.black))
+                    {
+                        hasBlackState = true;
+                    }
+
+                    if(hasRedState && hasBlackState)
+                    {
+                        addCells = false;
+                        break;
+                    }
+
+
+                    if (!this.state.Equals(cell.state))
+                    {
+                        if(!this.state.Equals(CellState.empty))
+                        {
+                            if(!cell.state.Equals(CellState.empty))
+                            {
+                                addCells = false;
+                                break;
+                            }
+                        }
+                        
+                    }
+                }
+
+                if (addCells)
+                    connectCells.Add(direction, region);
+
+            }
+                
         }
 
         //The cell adds itself to its connected cells observer list and the connected cells add the cell to their observer lists
@@ -65,6 +112,7 @@ namespace ConnectFour
                 {
                     //Adds connectCells to observer list
                     this.AddObserver(c.Key, cell); 
+
                     //Adds itself to connectCells
                     if (c.Key < 4)
                         cell.AddObserver(c.Key + 4, this);
@@ -76,16 +124,37 @@ namespace ConnectFour
 
         public void AddObserver(int index, Cell cell)
         {
-
+            
             if (observers.ContainsKey(index))
             {
-                observers[index].Add(cell);
+                if(cell.state.Equals(CellState.empty) && cell.isPlayable())
+                {
+                    observers[index].Add(cell);
+                    return;
+                }
+                if(cell.state.Equals(this.state))
+                {
+                    observers[index].Add(cell);
+                    return;
+                }
+                
             }
             else
             {
-                HashSet<Cell> c = new HashSet<Cell>();
-                c.Add(cell);
-                observers.Add(index, c);
+                if (cell.state.Equals(CellState.empty) && cell.isPlayable())
+                {
+                    HashSet<Cell> c = new HashSet<Cell>();
+                    c.Add(cell);
+                    observers.Add(index, c);
+                    return;
+                }
+                if (cell.state.Equals(this.state))
+                {
+                    HashSet<Cell> c = new HashSet<Cell>();
+                    c.Add(cell);
+                    observers.Add(index, c);
+                    return;
+                }
             }
 
         }
@@ -100,14 +169,46 @@ namespace ConnectFour
             return colPos;
         }
 
+        public Boolean isTerminal()
+        {
+            if(this.state.Equals(CellState.empty))
+            {
+                return false;
+            }
+
+            foreach(KeyValuePair<int, List<Cell>> c in connectCells)
+            {
+                foreach(Cell cell in c.Value)
+                {
+                    if(this.state != cell.state)
+                    {
+                        return false;            
+                    }     
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         public void setState(int s)
         {
-            if(state == CellState.empty)
+            if(playable)
             {
                 state = (CellState)s;
-            }
-            playable = false;
-                
+                playable = false;
+            }        
+        }
+
+        public HashSet<Cell> GetObservers(int key)
+        {
+            return observers[key];
+        }
+
+        public SortedDictionary<int, HashSet<Cell>> GetObservers()
+        {
+            return observers;
         }
 
         public CellState getState()

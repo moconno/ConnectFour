@@ -8,6 +8,7 @@ namespace ConnectFour
 {
     class AIPlayer : Player
     {
+        //int DEPTH = 4;
 
         public AIPlayer()
         {
@@ -16,9 +17,10 @@ namespace ConnectFour
 
         public override void Move(Board b)
         {
-            GameState gameState = new GameState(b, this, null, null);
-            MiniMaxTree m = new MiniMaxTree();
-            m.MiniMax(gameState, 4, true);
+            GameState gameState = new GameState(GameState.State.initial, b, this, null, null, true);
+            MiniMaxTree m = new MiniMaxTree(gameState);
+            //m.MiniMax(gameState, DEPTH, true);
+            m.GenerateStates(gameState, 4, true);
             int a = 0;
            
         }

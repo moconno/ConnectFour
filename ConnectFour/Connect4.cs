@@ -47,14 +47,8 @@ namespace ConnectFour
             Console.WriteLine();
 
             Board board = new Board(rowNum, colNum, r);
-            for(int i = 0; i < board.GetLength(); i++)
-            {
-                for(int j = 0; j < board.GetWidth(); j++)
-                {
-                    Region.findConnectedCells(board);
-                    board.getCell(i, j).UpdateObservers();
-                }
-            } 
+            Region.findConnectedCells(board);
+            board.UpdateCellObservers();
 
             Player p1 = null;
             Player p2 = null;

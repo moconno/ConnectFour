@@ -17,20 +17,12 @@ namespace ConnectFour
 
         protected static int connectR;
 
-        Player player;
-
         protected Boolean gameOver = false;
 
         public Board()
         {
 
         }
-
-        //public Board(Cell[,] b)
-        //{
-            //board = new Cell[b.GetLength(0), b.GetLength(1)];
-            //board = b;
-        //}
 
         public Board(int x, int y, int r)
         {
@@ -56,7 +48,6 @@ namespace ConnectFour
                     board[i, j] = cell;
                 }
             }
-          
         }
 
         //Copy constructor
@@ -79,8 +70,19 @@ namespace ConnectFour
                     board[i, j] = cell;
                 }
             }
-     
+        }
 
+        //Has each tell had 
+        public void UpdateCellObservers()
+        {
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+
+                    board[i, j].UpdateObservers();
+                }
+            } 
         }
 
         public Boolean isGameOver()
@@ -111,11 +113,6 @@ namespace ConnectFour
         public int GetConnectR()
         {
             return connectR;
-        }
-
-        public void setPlayer(Player p)
-        {
-            player = p;
         }
 
         public Cell getCell(int x, int y)
