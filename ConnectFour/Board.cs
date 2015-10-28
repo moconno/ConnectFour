@@ -57,7 +57,7 @@ namespace ConnectFour
 
             width = b.GetWidth();
 
-            connectR = b.GetConnectR();
+            connectR = Board.GetConnectR();
 
             board = new Cell[length, width];
 
@@ -110,7 +110,7 @@ namespace ConnectFour
             return length;
         }
 
-        public int GetConnectR()
+        public static int GetConnectR()
         {
             return connectR;
         }
@@ -118,6 +118,23 @@ namespace ConnectFour
         public Cell getCell(int x, int y)
         {
             return board[x, y];
+        }
+
+        public List<Cell> getPlayerCells(Player player)
+        {
+            List<Cell> cells = new List<Cell>();
+
+            for(int i = length - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < width - 1; j++)
+                {
+                    if((int)board[i, j].getState() == player.getColor())
+                    {
+                        cells.Add(board[i, j]);
+                    }
+                }
+            }
+            return cells;
         }
 
         public void printBoard()

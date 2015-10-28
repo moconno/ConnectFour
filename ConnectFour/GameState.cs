@@ -24,7 +24,7 @@ namespace ConnectFour
         Board board;
 
         //the parent board of the state - null for initial state
-        Board parent;
+        GameState parent;
 
         //the children of the state - null for terminal nodes
         List<GameState> children;
@@ -36,10 +36,10 @@ namespace ConnectFour
         Boolean maxPlayer;
 
         //heuristic value for the player of the game state
-        private int heruristicValue;
+        private int heuristicValue;
 
 
-        public GameState(State s, Board b, Player p, Board parent, Cell c, Boolean mp)
+        public GameState(State s, Board b, Player p, GameState parent, Cell c, Boolean mp)
         {
             maxPlayer = mp;
             state = s;
@@ -47,16 +47,18 @@ namespace ConnectFour
             board = b;
             player = p;
             this.parent = parent;
-            children = new List<GameState>();
+            children = new List<GameState>();  
             Region.findConnectedCells(b);
-            b.UpdateCellObservers();
+            b.UpdateCellObservers();  
+            if(cell != null && cell.isTerminal(false) && s == GameState.State.transition)
+            {
+                state = GameState.State.terminal;
+            }
         }
 
         public void FindChildrenStates(Boolean maxPlayer)
         {
             GameState gs;
-
-            this.maxPlayer = maxPlayer; 
 
             for(int i = 0; i < board.GetWidth(); i++)
             {
@@ -79,22 +81,32 @@ namespace ConnectFour
                                 cell.setState(player.getOpponent().getColor());
                             }
 
-                            if (cell.isTerminal())
+                            if (j != 0)
                             {
-                                gs = new GameState(GameState.State.terminal, b, player, board, cell, maxPlayer);
+                                b.getCell(j - 1, i).isPlayable(true);
+                            }
+
+                            gs = new GameState(GameState.State.transition, b, player, this, cell, !maxPlayer);
+                            children.Add(gs);
+
+                            //cell made a move that ended the game
+                            /*if (cell.isTerminal(false))
+                            {
+                                gs = new GameState(GameState.State.terminal, b, player, this, cell, !maxPlayer);
                                 children.Add(gs);
                                 break;
                             }
-
+                            
                             else
                             {
-                                gs = new GameState(GameState.State.transition, b, player, board, cell, maxPlayer);
+                                gs = new GameState(GameState.State.transition, b, player, this, cell, !maxPlayer);
+
                                 if( j != 0)
                                 {
                                     b.getCell(j - 1, i).isPlayable(true);
                                 }
                                 children.Add(gs);
-                            }
+                            }*/
                         }  
                     }
                     else
@@ -104,19 +116,55 @@ namespace ConnectFour
             }
         }
 
+        public Boolean hasGameEndingMove(Cell cell)
+        {
+            int connectR = Board.GetConnectR();
+
+            foreach (KeyValuePair<int, HashSet<Cell>> c in cell.GetObservers())
+            {
+                //Count is one because cell with observers is max's state cell
+                int count = 1;
+
+                foreach (Cell o in c.Value)
+                {
+                    if ((int)o.getState() == this.GetPlayer().getColor())
+                    {
+                        count++;
+                    }
+                }
+
+                if (count == connectR - 1)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
         public Boolean isMaxPlayer()
         {
             return maxPlayer;
         }
 
+        public Player GetPlayer()
+        {
+            return player;
+        }
+
+        public GameState GetParent()
+        {
+            return parent;
+        }
+
         public void SetHeuristicValue(int value)
         {
-            heruristicValue = value;
+            heuristicValue = value;
         }
 
         public int GetHeuristicValue()
         {
-            return heruristicValue;
+            return heuristicValue;
         }
 
         public Cell GetCell()
@@ -127,6 +175,11 @@ namespace ConnectFour
         public Board GetBoard()
         {
             return board;
+        }
+
+        public void SetState(GameState.State s)
+        {
+            state = s;
         }
 
         public State GetState()

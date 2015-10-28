@@ -127,11 +127,24 @@ namespace ConnectFour
             
             if (observers.ContainsKey(index))
             {
-                if(cell.state.Equals(CellState.empty) && cell.isPlayable())
+                if(cell.state.Equals(CellState.empty))
                 {
-                    observers[index].Add(cell);
-                    return;
+                    if(cell.isPlayable())
+                    {
+                        observers[index].Add(cell);
+                        return;
+                    }
                 }
+
+                if (this.state.Equals(CellState.empty))
+                {
+                    //if(this.isPlayable())
+                    {
+                        observers[index].Add(cell);
+                        return;
+                    }
+                }
+
                 if(cell.state.Equals(this.state))
                 {
                     observers[index].Add(cell);
@@ -141,13 +154,28 @@ namespace ConnectFour
             }
             else
             {
-                if (cell.state.Equals(CellState.empty) && cell.isPlayable())
+                if (cell.state.Equals(CellState.empty))
                 {
-                    HashSet<Cell> c = new HashSet<Cell>();
-                    c.Add(cell);
-                    observers.Add(index, c);
-                    return;
+                    //if(cell.isPlayable())
+                    {
+                        HashSet<Cell> c = new HashSet<Cell>();
+                        c.Add(cell);
+                        observers.Add(index, c);
+                        return;
+                    }
                 }
+
+                if (this.state.Equals(CellState.empty))
+                {
+                    //if (this.isPlayable())
+                    {
+                        HashSet<Cell> c = new HashSet<Cell>();
+                        c.Add(cell);
+                        observers.Add(index, c);
+                        return;
+                    }
+                }
+
                 if (cell.state.Equals(this.state))
                 {
                     HashSet<Cell> c = new HashSet<Cell>();
@@ -169,27 +197,94 @@ namespace ConnectFour
             return colPos;
         }
 
-        public Boolean isTerminal()
+        //checks if it is impossible to prevent killer move
+        //Inevitable win will check if a player has more than one way to end the game - used by the heuristic function
+        public Boolean isTerminal(Boolean inevitableWin)
         {
-            if(this.state.Equals(CellState.empty))
-            {
-                return false;
-            }
+            int connectR = Board.GetConnectR();
+            //if count greater than 1, then the state is terminal
+            int terminalStates = 0;
 
-            foreach(KeyValuePair<int, List<Cell>> c in connectCells)
+            foreach(KeyValuePair<int, HashSet<Cell>> c in observers)
             {
-                foreach(Cell cell in c.Value)
+                //initialized at 1 because this.cell has the state we are looking for
+                int stateCount = 1;
+
+                //the terminal state belongs to the this cell's connectedCells
+                if(c.Value.Count == connectR - 1)
                 {
-                    if(this.state != cell.state)
+                    foreach(Cell cell in c.Value)
                     {
-                        return false;            
-                    }     
-                }
+                        if(cell.state.Equals(this.state))
+                        {
+                            stateCount++;
+                        }
+                    }
 
-                return true;
+                    //the connectedCells have a possibility to end the game
+                    if(stateCount == connectR - 1)
+                    {
+                        terminalStates++;
+                    }
+
+                    //The cell last played created a connect 4.  Game over.
+                    if (stateCount == connectR)
+                    {
+                        return true;
+                    }
+                }
+                
+                //The terminal state belongs to an observer
+                else
+                {
+                    if (inevitableWin && c.Value.Count == 1)
+                    {
+                        int index;
+
+                        if (c.Key < 4)
+                        {
+                            index = c.Key + 4;
+                        }
+                        else
+                        {
+                            index = c.Key - 4;
+                        }
+
+                        foreach (Cell cell in c.Value)
+                        {
+                            if (cell.GetConnectedCells(index) != null && cell.GetConnectedCells(index).Count == connectR - 1)
+                            {
+                                foreach (Cell o in cell.GetConnectedCells(index))
+                                {
+                                    if (o.state.Equals(this.state))
+                                    {
+                                        stateCount++;
+                                    }
+
+                                    if (stateCount == connectR)
+                                    {
+                                        terminalStates++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            return false;
+            if (inevitableWin)
+            {
+                if (terminalStates > 1)
+                {
+                    return true;
+                }
+                else
+                    return false;
+
+            }
+            else
+                return false;
+
         }
 
         public void setState(int s)
@@ -199,6 +294,20 @@ namespace ConnectFour
                 state = (CellState)s;
                 playable = false;
             }        
+        }
+
+        public List<Cell> GetConnectedCells(int key)
+        {
+            if (connectCells.ContainsKey(key))
+
+                return connectCells[key];
+            else
+                return null; 
+        }
+
+        public SortedDictionary<int, List<Cell>> GetConnectedCells()
+        {
+            return connectCells;
         }
 
         public HashSet<Cell> GetObservers(int key)

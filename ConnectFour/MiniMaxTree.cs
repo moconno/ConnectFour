@@ -10,6 +10,10 @@ namespace ConnectFour
     {
         GameState root;
 
+        int MAX_VALUE = 1000000000;
+
+        int MIN_VALUE = -1000000000;
+
         public MiniMaxTree()
         {
 
@@ -22,14 +26,16 @@ namespace ConnectFour
 
         public void GenerateStates(GameState gs, int depth, Boolean maxPlayer)
         {
-            if(depth == 0)
+            if(depth == 0 || gs.GetState().Equals(GameState.State.terminal))
             {
-                //gs.SetHeuristicValue(FindHeuristicValue(gs));
+                gs.SetHeuristicValue(FindHeuristicValue(gs));
                 return;
             }
 
-            gs.FindChildrenStates(maxPlayer);
+           
+           gs.FindChildrenStates(maxPlayer);
             
+                
             foreach(GameState child in gs.GetChildren())
             {
                 if (maxPlayer)
@@ -41,88 +47,165 @@ namespace ConnectFour
             }
         }
 
-        public void FindHeuristicValue(GameState gs)
+        public int FindHeuristicValue(GameState gs)
         {
             int value;
+
+            int connectR = Board.GetConnectR();
 
             //if true it is maxPlayers turn and the board needs to be evaluate to minimize min's score
             if(gs.isMaxPlayer())
             {
-                int gameEndingMoves = 0;
+                
 
-                if(gs.GetCell().isTerminal())
+                //check if min made a killer move
+                if (gs.GetCell().isTerminal(false))
                 {
-                    value = -100;
-                    //return value;
+                    value = MIN_VALUE;
+                    return value;
                 }
 
-                foreach(KeyValuePair<int, HashSet<Cell>> c in gs.GetCell().GetObservers())
+                //check if max can make a killer move
+                foreach(Cell cell in gs.GetBoard().getPlayerCells(gs.GetPlayer()))
                 {
-                    foreach(Cell cell in c.Value)
+                    if(gs.hasGameEndingMove(cell))
                     {
-                        HashSet<Cell> cells;
-
-                        int stateCount = 0;
-
-                        if(cell.isPlayable())
-                        {
-                            switch(c.Key)
-                            {
-                                case 0:
-                                    break;
-
-
-                            }
-                        }
+                        value = MAX_VALUE;
+                        return value;
                     }
                 }
                 
+                //check if it is impossible to prevent min from winning
+                if(gs.GetCell().isTerminal(true))
+                {
+                    value = MIN_VALUE;
+                    return value;
+                }
+
+                //check if min can make a killer move
+                foreach (Cell cell in gs.GetBoard().getPlayerCells(gs.GetPlayer().getOpponent()))
+                {
+                    if (cell.isTerminal(false))
+                    {
+                        value = MAX_VALUE / 2;
+                        return value;
+                    }
+                }
+                
+
+                //if all else fails
+                //check if it is impossible to prevent max from winning
+                if (gs.GetParent().GetCell().isTerminal(true))
+                {
+                    value = MAX_VALUE;
+                    return value;
+                }
             }
+            
+            //It is not max's turn
+            else
+            {
+                
+                //check if max made a killer move
+                if (gs.GetCell().isTerminal(false))
+                {
+                    value = MAX_VALUE;
+                    return value;
+                }
+
+                //check if min can make a killer move
+                foreach (Cell cell in gs.GetBoard().getPlayerCells(gs.GetPlayer().getOpponent()))
+                {
+                    if (cell.isTerminal(false))
+                    {
+                        value = MIN_VALUE / 2;
+                        return value;
+                    }
+                }
+
+                //check if it is impossible to prevent max from winning
+                if (gs.GetCell().isTerminal(true))
+                {
+                    value = MAX_VALUE;
+                    return value;
+                }
+
+                //check if max can make a killer move
+                foreach (Cell cell in gs.GetBoard().getPlayerCells(gs.GetPlayer()))
+                {
+                    if (cell.isTerminal(false))
+                    {
+                        value = MAX_VALUE / 2;
+                        return value;
+                    }
+                }
+
+
+                //check if it is impossible to prevent min from winning
+                if (gs.GetParent().GetCell().isTerminal(true))
+                {
+                    value = MIN_VALUE;
+                    return value;
+                }
+
+
+            }
+
+            if (gs.isMaxPlayer())
+                return 1;
+            else
+                return -1;
         }
    
 
-        public void MiniMax(GameState gs, int depth, Boolean maxPlayer)
+        public int MiniMax(GameState gs, int depth, Boolean maxPlayer)
         {
             
             //base case
-            if (depth == 0 || gs.GetState() == GameState.State.terminal)
-                //return;
-            //return heuristic value of node
-            gs.FindChildrenStates(maxPlayer);
+            if (depth == 0 || gs.GetState().Equals(GameState.State.terminal))
+            {
+                return gs.GetHeuristicValue();
+            }
 
             if(maxPlayer)
             {
-                int bestValue = -100;
-                //for child in node
+                int bestValue = MIN_VALUE;
+
                 foreach(GameState child in gs.GetChildren())
                 {
-                    //int value = MiniMax(child, depth - 1, false);
-                    //bestValue = Max(bestValue, value);
+                    int value = MiniMax(child, depth - 1, false);
+
+                    if (value.CompareTo(bestValue) > 0)
+                    {
+                        gs.SetHeuristicValue(value);
+                        bestValue = value;
+                    }
                 }
-                
+
+                return bestValue;
             }
             else
             {
-                int bestValue = 100;
-                //for child in node
+                int bestValue = MAX_VALUE;
+               
                 foreach (GameState child in gs.GetChildren())
                 {
-                    MiniMax(child, depth - 1, true);
+                    int value = MiniMax(child, depth - 1, true);
+
+                    if(value.CompareTo(bestValue) < 0)
+                    {
+                        gs.SetHeuristicValue(value);
+                        bestValue = value;
+                    }
                 }
-                //int val = MiniMax(child, depth - 1, true);
-                //bestValue = min(bestValue, val)
+
+                return bestValue;
             }
+
+            
         }
 
-        /*public int Max(GameState gs)
-        {
-
-        }
-
-        public int Min(GameState gs)
-        {
-
-        }*/
+     
     }
 
 

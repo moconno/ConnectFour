@@ -17,13 +17,18 @@ namespace ConnectFour
         public override void Move(Board b)
         {
 
+            if(moveCount == b.GetLength() * b.GetWidth())
+            {
+                Console.WriteLine("Game Over, you both lose");
+            }
+
             Boolean moveMade = false;
 
             b.printBoard();
 
             if(this.getOpponent() != null)
             {
-                Console.WriteLine("Derp");
+                Console.WriteLine(" ");
             }
 
             Console.WriteLine(this.getColorToString() + " player's turn");
@@ -55,6 +60,8 @@ namespace ConnectFour
                         }
 
                         moveMade = true;
+
+                        moveCount++;
 
                         break;
                     }

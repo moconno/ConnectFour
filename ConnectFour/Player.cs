@@ -12,22 +12,18 @@ namespace ConnectFour
         protected Color color;
 
         Player opponent;
-        
 
+        protected static int moveCount = 0;
+        
         protected enum Color
         {
-            black = 2,
             red = 1,
+            black = 2,
         }
 
         public Player()
         {
 
-        }
-
-        public Player(Player player)
-        {
-            opponent = player;
         }
 
         public void setOpponent(Player player)
