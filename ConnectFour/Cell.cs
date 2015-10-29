@@ -30,6 +30,11 @@ namespace ConnectFour
             black = 2,
         }
 
+        public Cell()
+        {
+
+        }
+
         //Copy Constructor
         public Cell(Cell cell)
         {
@@ -55,10 +60,6 @@ namespace ConnectFour
             //Cells that are not the same state(red or black) should not be added to connectCells
             Boolean addCells = true;
 
-            Boolean hasRedState = false;
-            
-            Boolean hasBlackState = false;
-
             //Shouldn't add a region twice
             if(!connectCells.ContainsKey(direction))
             {
@@ -66,40 +67,29 @@ namespace ConnectFour
                 {
 
                     //Don't add cells from a region if they contain two different colors
-                    if(cell.state.Equals(CellState.red))
+                    if(cell.state == CellState.red)
                     {
-                        hasRedState = true;
-                    }
-                    else if(cell.state.Equals(CellState.black))
-                    {
-                        hasBlackState = true;
-                    }
-
-                    if(hasRedState && hasBlackState)
-                    {
-                        addCells = false;
-                        break;
-                    }
-
-
-                    if (!this.state.Equals(cell.state))
-                    {
-                        if(!this.state.Equals(CellState.empty))
+                        if(this.state == CellState.black)
                         {
-                            if(!cell.state.Equals(CellState.empty))
-                            {
-                                addCells = false;
-                                break;
-                            }
+                            addCells = false;
+                            break;
                         }
                         
                     }
+
+                    else if(cell.state == CellState.black)
+                    {
+                        if(this.state == CellState.red)
+                        {
+                            addCells = false;
+                            break;
+                        }
+                    }         
                 }
 
                 if (addCells)
                     connectCells.Add(direction, region);
-
-            }
+            }           
                 
         }
 
@@ -110,14 +100,17 @@ namespace ConnectFour
             {
                 foreach(Cell cell in c.Value)
                 {
-                    //Adds connectCells to observer list
-                    this.AddObserver(c.Key, cell); 
+                    
+                        //Adds connected cell to observer list
+                        this.AddObserver(c.Key, cell);
 
-                    //Adds itself to connectCells
-                    if (c.Key < 4)
-                        cell.AddObserver(c.Key + 4, this);
-                    else
-                        cell.AddObserver(c.Key - 4, this);
+                        //Adds itself to connectCells
+                        if (c.Key < 4)
+                            cell.AddObserver(c.Key + 4, this);
+                        else
+                            cell.AddObserver(c.Key - 4, this);
+
+                    
                 }
             }
         }
@@ -138,7 +131,8 @@ namespace ConnectFour
 
                 if (this.state.Equals(CellState.empty))
                 {
-                    //if(this.isPlayable())
+                    //this giving me problems - not evaluating correclty
+                    //if(cell.isPlayable())
                     {
                         observers[index].Add(cell);
                         return;
@@ -152,11 +146,14 @@ namespace ConnectFour
                 }
                 
             }
+
+            //Dictionary Doesn't contain key
             else
             {
                 if (cell.state.Equals(CellState.empty))
                 {
-                    //if(cell.isPlayable())
+                    //this giving me problems - not evaluating correctly
+                    if(cell.isPlayable())
                     {
                         HashSet<Cell> c = new HashSet<Cell>();
                         c.Add(cell);
@@ -167,7 +164,8 @@ namespace ConnectFour
 
                 if (this.state.Equals(CellState.empty))
                 {
-                    //if (this.isPlayable())
+                    //this giving me problems - not evaluating correctly
+                    //if (cell.isPlayable())
                     {
                         HashSet<Cell> c = new HashSet<Cell>();
                         c.Add(cell);
@@ -197,11 +195,12 @@ namespace ConnectFour
             return colPos;
         }
 
-        //checks if it is impossible to prevent killer move
-        //Inevitable win will check if a player has more than one way to end the game - used by the heuristic function
-        public Boolean isTerminal(Boolean inevitableWin)
+        
+        //checks if a potential terminal state exists for the cell
+        public int isTerminal()
         {
             int connectR = Board.GetConnectR();
+
             //if count greater than 1, then the state is terminal
             int terminalStates = 0;
 
@@ -209,6 +208,9 @@ namespace ConnectFour
             {
                 //initialized at 1 because this.cell has the state we are looking for
                 int stateCount = 1;
+
+                //keeps track of empty playable cells - should only equal 1 if a terminal state exists
+                int emptyCount = 0;
 
                 //the terminal state belongs to the this cell's connectedCells
                 if(c.Value.Count == connectR - 1)
@@ -219,25 +221,23 @@ namespace ConnectFour
                         {
                             stateCount++;
                         }
+                        if(cell.state.Equals(Cell.CellState.empty) && cell.isPlayable())
+                        {
+                            emptyCount++;
+                        }
                     }
 
                     //the connectedCells have a possibility to end the game
-                    if(stateCount == connectR - 1)
+                    if(stateCount == connectR - 1 && emptyCount == 1)
                     {
                         terminalStates++;
-                    }
-
-                    //The cell last played created a connect 4.  Game over.
-                    if (stateCount == connectR)
-                    {
-                        return true;
-                    }
+                    }         
                 }
                 
                 //The terminal state belongs to an observer
                 else
                 {
-                    if (inevitableWin && c.Value.Count == 1)
+                    if (c.Value.Count == 1)
                     {
                         int index;
 
@@ -260,30 +260,26 @@ namespace ConnectFour
                                     {
                                         stateCount++;
                                     }
-
-                                    if (stateCount == connectR)
+                                    else if(o.state.Equals(Cell.CellState.empty) && o.isPlayable())
                                     {
-                                        terminalStates++;
+                                        emptyCount++;
                                     }
                                 }
+
+                                //the cell have a possibility to end the game
+                                if (stateCount == connectR - 1 && emptyCount == 1)
+                                {
+                                    terminalStates++;
+                                }
+
+                                
                             }
                         }
                     }
                 }
             }
 
-            if (inevitableWin)
-            {
-                if (terminalStates > 1)
-                {
-                    return true;
-                }
-                else
-                    return false;
-
-            }
-            else
-                return false;
+            return terminalStates;
 
         }
 

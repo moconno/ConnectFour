@@ -49,10 +49,18 @@ namespace ConnectFour
             this.parent = parent;
             children = new List<GameState>();  
             Region.findConnectedCells(b);
-            b.UpdateCellObservers();  
-            if(cell != null && cell.isTerminal(false) && s == GameState.State.transition)
+            b.UpdateCellObservers(); 
+ 
+            if(MiniMaxTree.TerminalTest(cell) && state != GameState.State.initial)
             {
                 state = GameState.State.terminal;
+
+                if (maxPlayer)
+                {
+                    heuristicValue = MiniMaxTree.MIN_VALUE;
+                }
+                else
+                    heuristicValue = MiniMaxTree.MAX_VALUE;
             }
         }
 
@@ -87,26 +95,8 @@ namespace ConnectFour
                             }
 
                             gs = new GameState(GameState.State.transition, b, player, this, cell, !maxPlayer);
+
                             children.Add(gs);
-
-                            //cell made a move that ended the game
-                            /*if (cell.isTerminal(false))
-                            {
-                                gs = new GameState(GameState.State.terminal, b, player, this, cell, !maxPlayer);
-                                children.Add(gs);
-                                break;
-                            }
-                            
-                            else
-                            {
-                                gs = new GameState(GameState.State.transition, b, player, this, cell, !maxPlayer);
-
-                                if( j != 0)
-                                {
-                                    b.getCell(j - 1, i).isPlayable(true);
-                                }
-                                children.Add(gs);
-                            }*/
                         }  
                     }
                     else
@@ -114,32 +104,6 @@ namespace ConnectFour
                 }
                 
             }
-        }
-
-        public Boolean hasGameEndingMove(Cell cell)
-        {
-            int connectR = Board.GetConnectR();
-
-            foreach (KeyValuePair<int, HashSet<Cell>> c in cell.GetObservers())
-            {
-                //Count is one because cell with observers is max's state cell
-                int count = 1;
-
-                foreach (Cell o in c.Value)
-                {
-                    if ((int)o.getState() == this.GetPlayer().getColor())
-                    {
-                        count++;
-                    }
-                }
-
-                if (count == connectR - 1)
-                {
-                    return true;
-                }
-
-            }
-            return false;
         }
 
         public Boolean isMaxPlayer()

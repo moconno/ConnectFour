@@ -46,7 +46,7 @@ namespace ConnectFour
                         break;
                     }
 
-                    Cell cell = b.getCell(i, choice);
+                    cell = b.getCell(i, choice);
 
                     if (cell.isPlayable())
                     {
@@ -62,6 +62,13 @@ namespace ConnectFour
                         moveMade = true;
 
                         moveCount++;
+
+                        if (MiniMaxTree.TerminalTest(cell))
+                        {
+                            b.printBoard();
+                            Console.WriteLine("GameOver: " + this.getColorToString() + " wins");
+                            b.isGameOver(true);
+                        }
 
                         break;
                     }

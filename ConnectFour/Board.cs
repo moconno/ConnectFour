@@ -24,6 +24,7 @@ namespace ConnectFour
 
         }
 
+        //Initial board creation
         public Board(int x, int y, int r)
         {
             length = x;
@@ -72,7 +73,7 @@ namespace ConnectFour
             }
         }
 
-        //Has each tell had 
+        //Has each cell update its observers 
         public void UpdateCellObservers()
         {
             for (int i = 0; i < length; i++)
@@ -120,6 +121,7 @@ namespace ConnectFour
             return board[x, y];
         }
 
+        //Get the cells on the board that belong to the player
         public List<Cell> getPlayerCells(Player player)
         {
             List<Cell> cells = new List<Cell>();

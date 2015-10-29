@@ -13,6 +13,9 @@ namespace ConnectFour
 
         Player opponent;
 
+        //the cell last played
+        protected static Cell cell = new Cell();
+
         protected static int moveCount = 0;
         
         protected enum Color

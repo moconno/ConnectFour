@@ -92,9 +92,7 @@ namespace ConnectFour
             int turn = RED;
  
             while(!board.isGameOver())
-            {
-                //board.printBoard();
-                
+            { 
                 switch (turn)
                 {
                     case RED:
@@ -107,6 +105,8 @@ namespace ConnectFour
                         break;
                 }
             }
+
+            Console.Read();
          
         }
     }
